@@ -1,7 +1,10 @@
+import { useState } from "react";
 import type { Product } from "../types/Product.js";
 import ProductCard from "./ProductCard.js";
 
 function ProductList({ addToCart }: { addToCart: (product: Product, quantity: number) => void }) {
+
+const [searchTerm, setSearchTerm] = useState("");
 
 const products: Product[] = [
  {
@@ -30,13 +33,31 @@ const products: Product[] = [
  }
 ];
 
-  
+const filteredProducts = products.filter((product) => {
+  return product.name
+    .toLowerCase()
+    .includes(searchTerm.toLowerCase());
+});
+ 
   return (
     <>
     <h2>Products</h2>
-    {products.map((product) => (
-    <ProductCard key={product.id} product={product} addToCart={addToCart} />
-    )
+    <input
+      type="text"
+      placeholder="Search products..."
+      value={searchTerm}
+      onChange={(event) => setSearchTerm(event.target.value)}
+    />
+    {filteredProducts.length === 0 ? (
+      <p>No products found.</p>
+    ) : (
+      filteredProducts.map((product) => (
+        <ProductCard
+          key={product.id}
+          product={product}
+          addToCart={addToCart}
+        />
+      ))
     )}
     </>
   );
