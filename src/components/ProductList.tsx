@@ -6,7 +6,7 @@ function ProductList({ addToCart }: { addToCart: (product: Product, quantity: nu
 
 const [searchTerm, setSearchTerm] = useState("");
 const [selectedCategory, setSelectedCategory] = useState("all");
-
+const [sortOption, setSortOption] = useState("default");
 const products: Product[] = [
  {
   id: 101,
@@ -37,7 +37,7 @@ const products: Product[] = [
  }
 ];
 
-const filteredProducts = products.filter((product) => {
+ const filteredProducts = products.filter((product) => {
   const matchesSearch = product.name
     .toLowerCase()
     .includes(searchTerm.toLowerCase());
@@ -48,7 +48,28 @@ const filteredProducts = products.filter((product) => {
 
   return matchesSearch && matchesCategory;
 });
- 
+
+ const sortedProducts = [...filteredProducts];
+    if (sortOption === "price-low") {
+    sortedProducts.sort((productA, productB) => {
+      return productA.price - productB.price;
+    });
+  }
+    if (sortOption === "price-high") {
+      sortedProducts.sort((productA, productB) => {
+        return productB.price - productA.price;
+    });
+  }
+    if (sortOption === "name-az") {
+    sortedProducts.sort((productA, productB) => {
+      return productA.name.localeCompare(productB.name);
+    });
+  }
+    if (sortOption === "name-za") {
+    sortedProducts.sort((productA, productB) => {
+      return productB.name.localeCompare(productA.name);
+    });
+  }
   return (
     <>
     <h2>Products</h2>
@@ -67,10 +88,21 @@ const filteredProducts = products.filter((product) => {
       <option value="Rugby">Rugby</option>
       <option value="Cricket">Cricket</option>
     </select>
+
+    <select
+      value={sortOption}
+      onChange={(event) => setSortOption(event.target.value)}
+    >
+      <option value="default">Sort By</option>
+      <option value="price-low">Price: Low → High</option>
+      <option value="price-high">Price: High → Low</option>
+      <option value="name-az">Name: A → Z</option>
+      <option value="name-za">Name: Z → A</option>
+    </select>
     {filteredProducts.length === 0 ? (
       <p>No products found.</p>
     ) : (
-      filteredProducts.map((product) => (
+      sortedProducts.map((product) => (
         <ProductCard
           key={product.id}
           product={product}
